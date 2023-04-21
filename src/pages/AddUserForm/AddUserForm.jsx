@@ -13,6 +13,8 @@ export const AddUserForm = () => {
 
   const [checkboxValues, setCheckboxValues] = useState([]);
 
+  const [achivements, setAchivements] = useState([{}]);
+
   const isEmpty = (input) => {
     if (input.value === "") {
       setFormErr((prev) => {
@@ -35,9 +37,29 @@ export const AddUserForm = () => {
     });
   };
 
+  const handelAddAchivement = ()=>{
+    setAchivements((prev)=>{return [...prev, {}]})
+  }
+
+  const removeAchivement = (index)=>{
+    setAchivements((prev)=>{return prev.filter((_,i)=>{return i !=index})})
+  }
+ 
+  const addTitelToAchivements = (e,index)=>{
+    let newArr = [...achivements]
+    newArr[index].title =e.target.value;
+    setAchivements(newArr);
+  }
+
+  const addDateToAchivements = (e,index)=>{
+    let newArr = [...achivements]
+    newArr[index].date =e.target.value;
+    setAchivements(newArr);
+  }  
+ 
   const handelOnSubmit = (event) => {
     event.preventDefault();
-
+   
     if(isEmpty(event.target.firstName)|| 
     isEmpty(event.target.lastName)||
     isEmpty(event.target.address))
@@ -61,12 +83,6 @@ export const AddUserForm = () => {
     else{
       return false;
     }
-
-   
-   
-    
-
-
   
     if (!isEmpty(event.target.dob)) {
       let dobYear = new Date(event.target.dob.value).getFullYear();
@@ -109,7 +125,24 @@ export const AddUserForm = () => {
       });
     }
 
-    
+    for(let i=0; i<achivements.length; i++) 
+  { 
+    if(!(achivements[i].title&&achivements[i].date))
+    {
+      let newArr = [...achivements]
+      newArr[i].err ="Enter title and date ";
+      setAchivements(newArr); 
+      return false;
+    }
+    else{
+      let newArr = [...achivements]
+      newArr[i].err ="";
+      setAchivements(newArr);
+    }
+  }
+
+
+   
     console.log("data is valide")
 
     
@@ -184,6 +217,37 @@ export const AddUserForm = () => {
             travel
             <span>{formErr.intrest}</span>
           </div>
+
+          <div>
+            <label htmlFor="achivement">Achivement</label><br/>
+           
+            <table >
+            <tr>
+              <td>title</td>
+              <td>date</td>
+              <td> <input type="button" value="add" onClick={handelAddAchivement} /></td>
+            </tr>
+
+            {achivements.map(({title,date,err},index)=>{
+              return(
+            <>
+            
+            <tr>
+
+              <td><input type="text" name="title" id="" value={title} onChange={(e)=>{addTitelToAchivements(e,index)}}/></td>
+              <td><input type="date" name="date" id="" value={date} onChange={(e)=>{addDateToAchivements(e,index)}}/></td>
+              <td><input type="button" name="" id="" value="remove" onClick={()=>removeAchivement(index)}/></td>
+            </tr>
+            <span>{err}</span>
+            
+            </>
+              )
+            })}
+            
+            </table>
+
+          </div>
+
 
           <div>
             <input type="submit" value="submit" />
