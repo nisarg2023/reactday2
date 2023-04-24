@@ -1,10 +1,14 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const AddUserForm = () => {
+
+  const navigate  = useNavigate()
   const [formErr, setFormErr] = useState({
     firstName: "",
     lastName: "",
     mobile: "",
+    email:"",
     dob: "",
     gender: "",
     address: "",
@@ -38,11 +42,12 @@ export const AddUserForm = () => {
   };
 
   const handelAddAchivement = ()=>{
-    setAchivements((prev)=>{return [...prev, {}]})
+    setAchivements((prev)=>{return [...prev, {title:"",date:""}]})
   }
 
   const removeAchivement = (index)=>{
-    setAchivements((prev)=>{return prev.filter((_,i)=>{return i !=index})})
+    console.log(index)
+    setAchivements((prev)=>{return prev.filter((_,i)=>{return i !==index})})
   }
  
   const addTitelToAchivements = (e,index)=>{
@@ -77,6 +82,23 @@ export const AddUserForm = () => {
       } else {
         setFormErr((prev) => {
           return { ...prev, mobile: "" };
+        });
+      }
+    }
+    else{
+      return false;
+    }
+
+
+    if (!isEmpty(event.target.email)) {
+      if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(event.target.email.value)) {
+        setFormErr((prev) => {
+          return { ...prev, email: "email is not in proper formate" };
+        });
+        return false;
+      } else {
+        setFormErr((prev) => {
+          return { ...prev, email: "" };
         });
       }
     }
@@ -143,13 +165,14 @@ export const AddUserForm = () => {
 
 
    
-    console.log("data is valide")
+  navigate('/addpost')
 
     
   };
 
   return (
     <>
+    {console.log(achivements)}
       <form action="" onSubmit={(event) => handelOnSubmit(event)}>
         <div>
           <div>
@@ -166,6 +189,12 @@ export const AddUserForm = () => {
             <label htmlFor="mobile">moblie :</label>
             <input name="mobile" type="text" placeholder="moblie" />
             <span>{formErr.mobile}</span>
+          </div>
+
+          <div>
+            <label htmlFor="email">Email :</label>
+            <input name="email" type="text" placeholder="Email" />
+            <span>{formErr.email}</span>
           </div>
 
           <div>
@@ -230,17 +259,18 @@ export const AddUserForm = () => {
 
             {achivements.map(({title,date,err},index)=>{
               return(
-            <>
             
-            <tr>
+            
+            <tr key={index}>
 
               <td><input type="text" name="title" id="" value={title} onChange={(e)=>{addTitelToAchivements(e,index)}}/></td>
               <td><input type="date" name="date" id="" value={date} onChange={(e)=>{addDateToAchivements(e,index)}}/></td>
               <td><input type="button" name="" id="" value="remove" onClick={()=>removeAchivement(index)}/></td>
+              <span >{err}</span>
             </tr>
-            <span>{err}</span>
+           
             
-            </>
+            
               )
             })}
             
